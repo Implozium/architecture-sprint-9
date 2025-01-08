@@ -1,0 +1,46 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь")
+Person(manager, "Менеджер")
+
+System_Ext(operator, "Телеком-оператор")
+
+Container_Ext(site, "Сайт", "PHP / React.js")
+Container_Ext(gateway, "СМС-шлюз телеком-оператора")
+
+Container_Boundary(ABC, "Автоматизированная банковская система (АБС)") {
+    Component(ABClient, "Client", "Delphi")
+    ContainerDb(ABCDB, "БД", "Oracle")
+
+    Rel(ABClient, ABCDB, "Сохранение заявок")
+}
+
+Container_Boundary(internetBank, "Интернет-банк") {
+    Component(internetBankGateway, "Gateway", "Nginx")
+
+    Component(internetBankCore, "Core", "ASP.NET MVC 4.5")
+    ContainerDb(internetBankDB, "БД", "MS SQL")
+
+    Component(internetBankDeposite, "Deposite", "ASP.NET MVC 4.5")
+    ContainerDb(internetBankDepositeDB, "БД", "MS SQL")
+
+    Rel(internetBankGateway, internetBankCore, "Перенаправление \ получение счетов")
+    Rel(internetBankGateway, internetBankDeposite, "Перенаправление \ взаимодействие с депозитами")
+
+    Rel(internetBankCore, internetBankDB, "Сохранение данных")
+    Rel(internetBankDeposite, internetBankDepositeDB, "Сохранение депозитов")
+}
+
+Rel(site, internetBankGateway, "Получение списка депозитов")
+Rel(internetBankDeposite, gateway, "Отправка СМС с кодом / решением по заявке")
+Rel(internetBankDeposite, ABCDB, "Создание заявки о депозите")
+Rel(ABClient, internetBankGateway, "Информирование о заявке")
+
+Rel(gateway, operator, "СМС", "Отправка СМС")
+Rel(user, site, "Получение списка депозитов")
+Rel(user, internetBankGateway, "Открытие депозита по счету и сумме")
+Rel(operator, user, "СМС", "Получение СМС")
+
+Rel(manager, ABClient, "Обработка заявок")
+@enduml

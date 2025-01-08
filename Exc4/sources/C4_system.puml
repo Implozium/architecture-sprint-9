@@ -1,0 +1,26 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь")
+Person(innerConsultant, "Консультант")
+Person(outerConsultant, "Внешний Консультант")
+Person(employee, "Сотрудник банка")
+
+System_Ext(outerCallCenter, "Система партнёрского кол-центра")
+
+System_Boundary(bank, "Bank") {
+    Container(innerCallCenter, "Система кол-центра")
+    Container(S3, "S3")
+    Container(ABC, "Автоматизированная банковская система (АБС)", "Delphi")
+
+    Rel(innerCallCenter, outerCallCenter, "Переадресует звонок при загрузке")
+    Rel(ABC, S3, "Обновляет файл со ставками")
+}
+
+Rel(user, innerCallCenter, "Обращается за информацией о ставках")
+Rel(innerConsultant, innerCallCenter, "Обрабатывает звонки")
+Rel(innerConsultant, S3, "Загружает файл со ставками")
+Rel(outerConsultant, outerCallCenter, "Обрабатывает звонки")
+Rel(outerConsultant, S3, "Загружает файл со ставками")
+Rel(employee, ABC, "Выгружает файл со ставками")
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь")
+Person(innerConsultant, "Консультант")
+Person(outerConsultant, "Внешний Консультант")
+Person(employee, "Сотрудник банка")
+
+System_Ext(outerCallCenter, "Система партнёрского кол-центра")
+
+Container(S3, "S3")
+
+Container_Boundary(ABC, "Автоматизированная банковская система (АБС)") {
+    Component(ABClient, "Client", "Delphi")
+    ContainerDb(ABCDB, "БД", "Oracle")
+
+    Rel(ABClient, ABCDB, "Сохраняет информацию")
+    Rel(ABClient, S3, "Обновляет файл со ставками")
+}
+
+Container_Boundary(innerCallCenter, "Система кол-центра") {
+    Component(innerCallCenterFrontend, "Сайт", "React.JS")
+    Component(innerCallCenterBackend, "Бекенд", "Java Spring Boot")
+    Component(innerCallCenterDB, "БД", "PostgreSQL")
+
+    Rel(innerCallCenterBackend, outerCallCenter, "Переадресует звонок при загрузке")
+    Rel(innerCallCenterFrontend, innerCallCenterBackend, "Взаимодействует с API")
+    Rel(innerCallCenterBackend, innerCallCenterDB, "Сохраняет информацию")
+}
+
+Rel(user, innerCallCenterBackend, "Обращается за информацией о ставках")
+Rel(innerConsultant, innerCallCenterFrontend, "Обрабатывает звонки")
+Rel(innerConsultant, S3, "Загружает файл со ставками")
+Rel(outerConsultant, outerCallCenter, "Обрабатывает звонки")
+Rel(outerConsultant, S3, "Загружает файл со ставками")
+Rel(employee, ABClient, "Выгружает файл со ставками")
+@enduml

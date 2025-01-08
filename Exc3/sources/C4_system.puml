@@ -1,0 +1,27 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь")
+Person(manager, "Менеджер")
+
+System_Ext(operator, "Телеком-оператор")
+
+System_Boundary(bank, "Bank") {
+    Container(site, "Сайт", "PHP / React.js")
+    Container(internetBank, "Интернет-банк", "ASP.NET MVC 4.5")
+    Container(ABC, "Автоматизированная банковская система (АБС)", "Delphi")
+    Container(gateway, "СМС-шлюз телеком-оператора")
+
+    Rel(site, internetBank, "Получение списка депозитов")
+    Rel(internetBank, gateway, "Отправка СМС с кодом / решением по заявке")
+    Rel(internetBank, ABC, "Создание заявки о депозите")
+    Rel(ABC, internetBank, "Информирование о заявке")
+}
+
+Rel(gateway, operator, "СМС", "Отправка СМС")
+Rel(user, site, "Получение списка депозитов")
+Rel(user, internetBank, "Открытие депозита по счету и сумме")
+Rel(operator, user, "СМС", "Получение СМС")
+
+Rel(manager, ABC, "Обработка заявок")
+@enduml
