@@ -3,10 +3,13 @@
 
 Person(user, "Пользователь")
 Person(manager, "Менеджер")
+Person(consultant, "Консультант")
+Person(employee, "Сотрудник банка")
 
 System_Ext(operator, "Телеком-оператор")
 
 System_Boundary(bank, "Bank") {
+    Container(callCenter, "Система кол-центра")
     Container(site, "Сайт", "PHP / React.js")
     Container(internetBank, "Интернет-банк", "ASP.NET MVC 4.5")
     Container(ABC, "Автоматизированная банковская система (АБС)", "Delphi")
@@ -22,6 +25,10 @@ Rel(gateway, operator, "СМС", "Отправка СМС")
 Rel(user, site, "Получение списка депозитов")
 Rel(user, internetBank, "Открытие депозита по счету и сумме")
 Rel(operator, user, "СМС", "Получение СМС")
+Rel(consultant, callCenter, "Обрабатывает заявки и связывается с пользователем")
+Rel(callCenter, user, "Соединяет с пользователем")
+Rel(consultant, ABC, "Добавляет информацию по заявке от пользователя")
+Rel(employee, ABC, "Добавляет заявку на депозит")
 
 Rel(manager, ABC, "Обработка заявок")
 @enduml

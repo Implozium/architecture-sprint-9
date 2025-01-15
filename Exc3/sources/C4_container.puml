@@ -3,6 +3,8 @@
 
 Person(user, "Пользователь")
 Person(manager, "Менеджер")
+Person(consultant, "Консультант")
+Person(employee, "Сотрудник банка")
 
 System_Ext(operator, "Телеком-оператор")
 
@@ -32,6 +34,16 @@ Container_Boundary(internetBank, "Интернет-банк") {
     Rel(internetBankDeposite, internetBankDepositeDB, "Сохранение депозитов")
 }
 
+
+Container_Boundary(callCenter, "Система кол-центра") {
+    Component(callCenterFrontend, "Сайт", "React.JS")
+    Component(callCenterBackend, "Бекенд", "Java Spring Boot")
+    ContainerDb(callCenterDB, "БД", "PostgreSQL")
+
+    Rel(callCenterFrontend, callCenterBackend, "Взаимодействует с API")
+    Rel(callCenterBackend, callCenterDB, "Сохраняет информацию")
+}
+
 Rel(site, internetBankGateway, "Получение списка депозитов")
 Rel(internetBankDeposite, gateway, "Отправка СМС с кодом / решением по заявке")
 Rel(internetBankDeposite, ABCDB, "Создание заявки о депозите")
@@ -41,6 +53,12 @@ Rel(gateway, operator, "СМС", "Отправка СМС")
 Rel(user, site, "Получение списка депозитов")
 Rel(user, internetBankGateway, "Открытие депозита по счету и сумме")
 Rel(operator, user, "СМС", "Получение СМС")
+
+Rel(consultant, callCenterFrontend, "Обрабатывает заявки и связывается с пользователем")
+Rel(callCenterBackend, user, "Соединяет с пользователем")
+Rel(consultant, ABClient, "Добавляет информацию по заявке от пользователя")
+
+Rel(employee, ABClient, "Добавляет заявку на депозит")
 
 Rel(manager, ABClient, "Обработка заявок")
 @enduml
